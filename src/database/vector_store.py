@@ -1,13 +1,13 @@
 import config
 from uuid import uuid4
-from langchain_milvus import Milvus
+from langchain_chroma import Chroma
 
 
 class VectorStore:
     def __init__(self, embeddings, uri=config.DATABASE_URI):
-        self.vector_store = Milvus(
+        self.vector_store = Chroma(
             embedding_function=embeddings,
-            connection_args={"uri": uri},
+            persist_directory=uri,
         )
 
     def add_document(self, document):
