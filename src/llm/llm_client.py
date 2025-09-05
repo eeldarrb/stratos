@@ -1,10 +1,11 @@
+import config
 from ollama import chat
 
 
 def analyze_image(file_path):
     try:
         res = chat(
-            model="gemma3:4b",
+            model=config.IMAGE_MODEL,
             messages=[
                 {
                     "role": "user",
