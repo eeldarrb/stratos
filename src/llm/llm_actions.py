@@ -9,7 +9,7 @@ def analyze_image(file_path):
             messages=[
                 {
                     "role": "user",
-                    "content": "what is in this picture?",
+                    "content": "Describe the contents of the image. Do not include any preamble.",
                     "images": [file_path],
                 }
             ],
