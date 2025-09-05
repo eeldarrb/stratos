@@ -1407,6 +1407,7 @@ dependencies = [
     { name = "langchain-chroma" },
     { name = "langchain-core" },
     { name = "langchain-ollama" },
+    { name = "ollama" },
     { name = "pillow" },
     { name = "pytesseract" },
 ]
@@ -1416,6 +1417,7 @@ requires-dist = [
     { name = "langchain-chroma", specifier = ">=0.2.5" },
     { name = "langchain-core", specifier = ">=0.3.74" },
     { name = "langchain-ollama", specifier = ">=0.3.7" },
+    { name = "ollama", specifier = ">=0.5.3" },
     { name = "pillow", specifier = ">=11.3.0" },
     { name = "pytesseract", specifier = ">=0.3.13" },
 ]
