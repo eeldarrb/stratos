@@ -1,7 +1,15 @@
 import config
+from dataclasses import dataclass
 from uuid import uuid4
 from langchain_chroma import Chroma
 from langchain_core.documents import Document
+
+
+@dataclass()
+class Item:
+    text: str
+    file_path: str
+    mimetype: str
 
 
 class VectorStore:
@@ -11,17 +19,14 @@ class VectorStore:
             persist_directory=uri,
         )
 
-    def add_item(self, text, file_path, mimetype):
-        uuid = str(uuid4())
-        print(uuid)
-        doc = Document(
-            page_content=text,
-            metadata={
-                "path": file_path,
-                "mimetype": mimetype,
-            },
-        )
-        self.vector_store.add_documents(documents=[doc], ids=uuid)
+    def add_items(self, items: list[Item]):
+        docs = []
+        uuids = []
+        for item in items:
+            uuids.append(str(uuid4()))
+            metadata = {"path": item.file_path, "mimetype": item.mimetype}
+            docs.append(Document(page_content=item.text, metadata=metadata))
+        self.vector_store.add_documents(documents=docs, ids=uuids)
 
     def delete_document(self, document_id):
         self.vector_store.delete(ids=document_id)
