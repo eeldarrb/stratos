@@ -16,6 +16,7 @@ class Item:
 class VectorStore:
     def __init__(self, embeddings, uri=config.DATABASE_URI):
         self.vector_store = Chroma(
+            collection_name="local_files",
             embedding_function=embeddings,
             persist_directory=uri,
         )
@@ -33,7 +34,7 @@ class VectorStore:
         self.vector_store.delete(ids=document_id)
 
     def search(self, query, k=10):
-        results = self.vector_store.similarity_search_with_score(query=query, k=3)
+        results = self.vector_store.similarity_search_with_score(query=query, k=k)
         return results
 
     # def update_document():
