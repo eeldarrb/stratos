@@ -11,6 +11,7 @@ IMAGE_TYPE = [".png", ".jpg", ".jpeg"]
 
 def create_item_from_file(file_path) -> Item:
     path = Path(file_path)
+    file_name = path.name
     ext = path.suffix.lower()
     text = ""
 
@@ -28,7 +29,7 @@ def create_item_from_file(file_path) -> Item:
         print(f"Error while prepraring item: {e}")
         text = ""
 
-    return Item(text, file_path, ext)
+    return Item(text, file_path, ext, source=file_name)
 
 
 def process_file(file_path):
