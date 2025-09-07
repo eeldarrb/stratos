@@ -11,4 +11,5 @@ dependencies = [
     "ollama>=0.5.3",
     "pillow>=11.3.0",
     "pytesseract>=0.3.13",
+    "watchdog>=6.0.0",
 ]
