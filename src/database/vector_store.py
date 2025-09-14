@@ -26,8 +26,12 @@ class VectorStore:
         uuids = []
         for item in items:
             uuids.append(str(uuid4()))
-            metadata = {"path": item.file_path, "mimetype": item.mimetype}
-            docs.append(Document(page_content=item.text, metadata=metadata))
+            docs.append(
+                Document(
+                    page_content=item.text,
+                    metadata={"path": item.file_path, "mimetype": item.mimetype},
+                )
+            )
         self.vector_store.add_documents(documents=docs, ids=uuids)
 
     def delete_document(self, document_id):
