@@ -37,4 +37,13 @@ class VectorStore:
         results = self.vector_store.similarity_search_with_score(query=query, k=k)
         return results
 
-    # def update_document():
+    def update_document(self, file_path, new_item):
+        doc_ids = self.vector_store.get(where={"path": file_path}).get("ids")
+
+        if doc_ids:
+            doc_id = doc_ids[0]
+            updated_doc = Document(
+                page_content=new_item.text,
+                metadata={"path": new_item.file_path, "mimetype": new_item.mimetype},
+            )
+            self.vector_store.update_document(doc_id, updated_doc)
