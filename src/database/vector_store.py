@@ -1,16 +1,8 @@
 import config
-from dataclasses import dataclass
 from uuid import uuid4
 from langchain_chroma import Chroma
 from langchain_core.documents import Document
-
-
-@dataclass()
-class Item:
-    text: str
-    file_path: str
-    mimetype: str
-    source: str
+from ..embedding.item import Item
 
 
 class VectorStore:
