@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
-from .providers import ollama
-from ..database.vector_store import VectorStore
+from ..vector_store.embedding import ollama
+from ..vector_store.vector_store import VectorStore
 from .extractor import extract_text
 from .item import Item
 
