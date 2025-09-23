@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 
 @dataclass()
-class Item:
+class FileRecord:
     text: str
     file_path: str
     mimetype: str

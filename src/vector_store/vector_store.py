@@ -1,84 +1,89 @@
-import config
 from uuid import uuid4
 from langchain_chroma import Chroma
+from langchain_ollama import OllamaEmbeddings
 from langchain_core.documents import Document
-from ..embedding.item import Item
+
+from src.ingest.file_store import FileStore
+from src.types.file_record import FileRecord
 
 
-class VectorStore:
-    def __init__(self, embeddings, uri=config.DATABASE_URI):
-        self.vector_store = Chroma(
+class VectorStore(FileStore):
+    def __init__(self, embedding_model, uri):
+        self._client = Chroma(
             collection_name="local_files",
-            embedding_function=embeddings,
+            embedding_function=OllamaEmbeddings(model=embedding_model),
             persist_directory=uri,
         )
 
-    def search(self, query, k=10):
-        results = self.vector_store.similarity_search_with_score(query=query, k=k)
+    def add(self, files: list[FileRecord]):
+        docs = []
+        doc_ids = [str(uuid4()) for _ in range(len(files))]
+        for file in files:
+            docs.append(self._file_to_document(file))
+        self._client.add_documents(ids=[doc_ids], documents=docs)
+
+    def update(self, file_path: str, new_file: FileRecord):
+        doc_id = self._get_ids_by_path(file_path)
+        if doc_id:
+            new_doc = self._file_to_document(new_file)
+            self._client.update_document(document_id=doc_id, document=new_doc)
+        else:
+            raise FileNotFoundError(file_path)
+
+    def delete_by_path(self, file_path: str):
+        doc_id = self._get_ids_by_path(file_path)
+        if doc_id:
+            self._client.delete(ids=[doc_id])
+        else:
+            raise FileNotFoundError(file_path)
+
+    def move(self, old_path: str, new_path: str):
+        res = self._get_documents_where(path=old_path)
+        print(res)
+
+        if res and res.get("ids"):
+            doc_id = res["ids"][0]
+            page_content = res["documents"][0]
+            metadata = res["metadatas"][0]
+            metadata["path"] = new_path
+
+            updated_doc = Document(page_content=page_content, metadata=metadata)
+            self._client.update_document(document_id=doc_id, document=updated_doc)
+        else:
+            raise FileNotFoundError(old_path)
+
+    def query(self, query: str, k: int = 10) -> list[tuple[FileRecord, float]]:
+        files = []
+        documents = self._client.similarity_search_with_score(query, k=k)
+        for document, score in documents:
+            file = self._document_to_file(document)
+            files.append((file, score))
+        return files
+
+    def _get_documents_where(self, **kwargs):
+        results = self._client.get(where=kwargs)
         return results
 
-    def add_items(self, items: list[Item]):
-        docs = []
-        uuids = []
-        for item in items:
-            uuids.append(str(uuid4()))
-            docs.append(
-                Document(
-                    page_content=item.text,
-                    metadata={"path": item.file_path, "mimetype": item.mimetype},
-                )
-            )
-        self.vector_store.add_documents(documents=docs, ids=uuids)
+    # TODO: test the get id method
+    def _get_ids_by_path(self, file_path: str) -> str:
+        return self._client.get(where={"path": file_path}).get("ids", [])
 
-    def move_document(self, old_path, new_path):
-        result = self._get_item_by_path(old_path)
-        if result:
-            doc_id, item = result
-            self.vector_store.update_document(
-                doc_id,
-                Document(
-                    page_content=item.text,
-                    metadata={"path": new_path, "mimetype": item.mimetype},
-                ),
-            )
+    def _file_to_document(self, file: FileRecord) -> Document:
+        return Document(
+            page_content=file.text,
+            metadata={
+                "path": file.file_path,
+                "mimetype": file.mimetype,
+                "source": file.source,
+            },
+        )
 
-    def update_document(self, file_path, new_item: Item):
-        result = self._get_item_by_path(file_path)
-        if result:
-            doc_id, _ = result
-            self.vector_store.update_document(
-                doc_id,
-                Document(
-                    page_content=new_item.text,
-                    metadata={
-                        "path": new_item.file_path,
-                        "mimetype": new_item.mimetype,
-                    },
-                ),
-            )
+    def _document_to_file(self, document: Document) -> FileRecord:
+        text = document.page_content
+        metadata = document.metadata
 
-    def delete_document(self, file_path):
-        result = self._get_item_by_path(file_path)
-        if result:
-            doc_id, _ = result
-            self.vector_store.delete(ids=[doc_id])
+        file_path = metadata.get("path", "")
+        source = metadata.get("source", "")
+        mimetype = metadata.get("mimetype", "")
 
-    def _get_item_by_path(self, file_path: str) -> tuple[str, Item] | None:
-        result = self.vector_store.get(where={"path": file_path})
-        ids = result.get("ids")
-        texts = result.get("documents")
-        metadatas = result.get("metadatas")
-
-        if ids and texts and metadatas and len(ids) == 1:
-            id = ids[0]
-            text = texts[0]
-            metadata = metadatas[0]
-
-            item = Item(
-                text=text,
-                file_path=metadata.get("path"),
-                mimetype=metadata.get("mimetype"),
-                source=metadata.get("source", ""),
-            )
-            return id, item
-        return None
+        return FileRecord(text, file_path, mimetype, source)
