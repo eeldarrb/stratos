@@ -1,7 +1,7 @@
 import os
 
 from src.types.file_record import FileRecord
-from .file_store import FileStore
+from src.file_store.file_store import FileStore
 
 from src.preprocessors.chunker import chunk_text
 from src.preprocessors.extractor import extract_text
