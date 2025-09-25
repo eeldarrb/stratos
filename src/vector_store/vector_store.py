@@ -4,6 +4,7 @@ from langchain_ollama import OllamaEmbeddings
 from langchain_core.documents import Document
 
 from src.ingest.file_store import FileStore
+from src.ingest.utils import get_filename, get_mimetype
 from src.types.file_record import FileRecord
 
 
@@ -44,8 +45,11 @@ class VectorStore(FileStore):
         if res and res.get("ids"):
             doc_id = res["ids"][0]
             page_content = res["documents"][0]
+
             metadata = res["metadatas"][0]
             metadata["path"] = new_path
+            metadata["source"] = get_filename(new_path)
+            metadata["mimetype"] = get_mimetype(new_path)
 
             updated_doc = Document(page_content=page_content, metadata=metadata)
             self._client.update_document(document_id=doc_id, document=updated_doc)
