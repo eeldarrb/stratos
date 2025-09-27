@@ -4,7 +4,7 @@ from langchain_ollama import OllamaEmbeddings
 from langchain_core.documents import Document
 
 from .file_store import FileStore
-from src.ingest.utils import get_filename, get_mimetype
+from src.utils import get_filename, get_mimetype
 from src.types.file_record import FileRecord
 
 

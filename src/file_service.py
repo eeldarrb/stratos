@@ -5,7 +5,7 @@ from src.file_store.file_store import FileStore
 
 from src.preprocessors.chunker import chunk_text
 from src.preprocessors.extractor import extract_text
-from src.ingest.utils import get_filename, get_mimetype
+from src.utils import get_filename, get_mimetype
 
 
 class FileService:
