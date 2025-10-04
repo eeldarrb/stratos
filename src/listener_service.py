@@ -25,7 +25,7 @@ class MyEventHandler(events.FileSystemEventHandler):
         self.event_queue.put(("deleted", event.src_path))
 
 
-def worker(file_service: FileService, embed_queue):
+def worker(file_service: FileService, embed_queue: queue.Queue):
     try:
         while True:
             fs_event, file_path = embed_queue.get()
