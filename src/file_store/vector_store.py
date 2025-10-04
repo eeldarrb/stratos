@@ -21,10 +21,10 @@ class VectorStore(FileStore):
         doc_ids = [str(uuid4()) for _ in range(len(files))]
         for file in files:
             docs.append(self._file_to_document(file))
-        self._client.add_documents(ids=[doc_ids], documents=docs)
+        self._client.add_documents(ids=doc_ids, documents=docs)
 
     def update(self, file_path: str, new_file: FileRecord):
-        doc_id = self._get_ids_by_path(file_path)
+        doc_id = self._get_ids_by_path(file_path)[0]
         if doc_id:
             new_doc = self._file_to_document(new_file)
             self._client.update_document(document_id=doc_id, document=new_doc)
@@ -34,13 +34,12 @@ class VectorStore(FileStore):
     def delete_by_path(self, file_path: str):
         doc_id = self._get_ids_by_path(file_path)
         if doc_id:
-            self._client.delete(ids=[doc_id])
+            self._client.delete(ids=doc_id)
         else:
             raise FileNotFoundError(file_path)
 
     def move(self, old_path: str, new_path: str):
         res = self._get_documents_where(path=old_path)
-        print(res)
 
         if res and res.get("ids"):
             doc_id = res["ids"][0]
@@ -69,7 +68,7 @@ class VectorStore(FileStore):
         return results
 
     # TODO: test the get id method
-    def _get_ids_by_path(self, file_path: str) -> str:
+    def _get_ids_by_path(self, file_path: str) -> list[str]:
         return self._client.get(where={"path": file_path}).get("ids", [])
 
     def _file_to_document(self, file: FileRecord) -> Document:
