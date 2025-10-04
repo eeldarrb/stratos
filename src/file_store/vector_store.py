@@ -21,7 +21,7 @@ class VectorStore(FileStore):
         doc_ids = [str(uuid4()) for _ in range(len(files))]
         for file in files:
             docs.append(self._file_to_document(file))
-        self._client.add_documents(ids=[doc_ids], documents=docs)
+        self._client.add_documents(ids=doc_ids, documents=docs)
 
     def update(self, file_path: str, new_file: FileRecord):
         doc_id = self._get_ids_by_path(file_path)
