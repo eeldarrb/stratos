@@ -39,7 +39,11 @@ class FileService:
             self._store.add(file_records)
 
         except Exception as e:
-            print(f"Error processing file {e}")
+            raise Exception(f"error adding file '${file_path}': {e}")
 
     def delete_file(self, file_path):
-        self._store.delete_by_path(file_path)
+        try:
+            self._store.delete_by_path(file_path)
+
+        except Exception as e:
+            raise Exception(f"error deleting file '${file_path}': {e}")

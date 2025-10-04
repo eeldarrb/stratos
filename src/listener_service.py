@@ -33,9 +33,8 @@ def worker(file_service: FileService, embed_queue):
                 file_service.process_path(file_path)
             elif fs_event == "deleted":
                 file_service.delete_file(file_path)
-
         except Exception as e:
-            print(f"Error processing file {e}")
+            print(f"[Worker] Unexpected Error Occured: {e}")
 
 
 def start_listener(file_service: FileService, paths_to_watch: list[str]):
