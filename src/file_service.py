@@ -13,37 +13,40 @@ class FileService:
         self._store = store
 
     def process_path(self, file_path):
-        if os.path.isdir(file_path):
-            for root, _, files in os.walk(file_path):
-                for file in files:
-                    if not file.startswith("."):
-                        path = os.path.join(root, file)
-                        self.add_file(path)
-        else:
-            self.add_file(file_path)
-
-    def add_file(self, file_path):
         try:
-            file_records = []
-
-            raw_text = extract_text(file_path)
-            chunks = chunk_text(raw_text)
-
-            # TODO: change source to base file name?
-            for chunk in chunks:
-                mimetype = get_mimetype(file_path)
-                source = get_filename(file_path)
-                file_record = FileRecord(chunk, file_path, mimetype, source)
-                file_records.append(file_record)
-
-            self._store.add(file_records)
-
+            print(f"Processing {file_path}: PENDING", end="\r")
+            if os.path.isdir(file_path):
+                for root, _, files in os.walk(file_path):
+                    for file in files:
+                        if not file.startswith("."):
+                            path = os.path.join(root, file)
+                            self._add_file(path)
+            else:
+                self._add_file(file_path)
+            print(f"Processing {file_path}: COMPLETE")
         except Exception as e:
-            raise Exception(f"error adding file '${file_path}': {e}")
+            print(f"Error processing {file_path}: {e}")
+
+    def _add_file(self, file_path):
+        file_records = []
+
+        raw_text = extract_text(file_path)
+        chunks = chunk_text(raw_text)
+
+        # TODO: change source to base file name?
+        for chunk in chunks:
+            mimetype = get_mimetype(file_path)
+            source = get_filename(file_path)
+            file_record = FileRecord(chunk, file_path, mimetype, source)
+            file_records.append(file_record)
+
+        self._store.add(file_records)
 
     def delete_file(self, file_path):
         try:
+            print(f"Deleting {file_path}: PENDING", end="\r")
             self._store.delete_by_path(file_path)
+            print(f"Deleting {file_path}: COMPLETE")
 
         except Exception as e:
-            raise Exception(f"error deleting file '${file_path}': {e}")
+            print(f"Error deleting {file_path}: {e}")
