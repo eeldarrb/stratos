@@ -26,15 +26,15 @@ class MyEventHandler(events.FileSystemEventHandler):
 
 
 def worker(file_service: FileService, embed_queue):
-    while True:
-        try:
+    try:
+        while True:
             fs_event, file_path = embed_queue.get()
             if fs_event == "created" or fs_event == "moved":
                 file_service.process_path(file_path)
             elif fs_event == "deleted":
                 file_service.delete_file(file_path)
-        except Exception as e:
-            print(f"[Worker] Unexpected Error Occured: {e}")
+    except Exception as e:
+        print(f"[Worker] Unexpected Error Occured: {e}")
 
 
 def start_listener(file_service: FileService, paths_to_watch: list[str]):
