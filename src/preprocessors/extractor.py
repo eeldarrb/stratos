@@ -1,5 +1,4 @@
-import pytesseract
-from PIL import Image
+import pymupdf
 from pathlib import Path
 from ..llm import llm_actions
 
@@ -12,7 +11,11 @@ def extract_text(file_path) -> str:
 
     try:
         if ext == ".pdf":
-            return pytesseract.image_to_string(Image.open(file_path))
+            text = ""
+            doc = pymupdf.open(file_path)
+            for page in doc:
+                text += page.get_text()
+            return text
 
         elif ext in IMAGE_TYPE:
             return llm_actions.analyze_image(file_path)
@@ -20,6 +23,5 @@ def extract_text(file_path) -> str:
         else:
             file = open(file_path, "r")
             return file.read()
-    except Exception as e:
-        print(f"Error while prepraring item: {e}")
-        return ""
+    except Exception:
+        raise Exception("Error extracting text")

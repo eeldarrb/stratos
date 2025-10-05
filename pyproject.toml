@@ -11,6 +11,6 @@ dependencies = [
     "langchain-text-splitters>=0.3.9",
     "ollama>=0.5.3",
     "pillow>=11.3.0",
-    "pytesseract>=0.3.13",
+    "pymupdf>=1.26.4",
     "watchdog>=6.0.0",
 ]
