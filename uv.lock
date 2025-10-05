@@ -1425,6 +1425,7 @@ dependencies = [
     { name = "ollama" },
     { name = "pillow" },
     { name = "pymupdf" },
+    { name = "typer" },
     { name = "watchdog" },
 ]
 
@@ -1437,6 +1438,7 @@ requires-dist = [
     { name = "ollama", specifier = ">=0.5.3" },
     { name = "pillow", specifier = ">=11.3.0" },
     { name = "pymupdf", specifier = ">=1.26.4" },
+    { name = "typer", specifier = ">=0.17.3" },
     { name = "watchdog", specifier = ">=6.0.0" },
 ]
 
