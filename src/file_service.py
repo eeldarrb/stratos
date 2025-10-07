@@ -50,3 +50,19 @@ class FileService:
 
         except Exception as e:
             print(f"Error deleting {file_path}: {e}")
+
+    def query_files(self, query, k=10):
+        unique_files = []
+        try:
+            results = self._store.query(query, k)
+            sorted_results = sorted(results, key=lambda file: file[1])
+
+            for file_record, _ in sorted_results:
+                if file_record.file_path not in unique_files:
+                    unique_files.append((file_record.file_path))
+
+        except Exception as e:
+            print(f"[Query] Unexpected Error Occured: {e}")
+
+        finally:
+            return unique_files
