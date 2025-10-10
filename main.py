@@ -25,5 +25,11 @@ def query(query: str):
         print(f"{index + 1}: {file_name}")
 
 
+@app.command()
+def sync():
+    for path in config.PATHS_TO_WATCH:
+        file_service.process_path(path)
+
+
 if __name__ == "__main__":
     app()
