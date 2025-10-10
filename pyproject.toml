@@ -12,5 +12,6 @@ dependencies = [
     "ollama>=0.5.3",
     "pillow>=11.3.0",
     "pymupdf>=1.26.4",
+    "typer>=0.17.3",
     "watchdog>=6.0.0",
 ]
