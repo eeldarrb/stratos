@@ -14,7 +14,6 @@ class FileService:
 
     def process_path(self, file_path):
         try:
-            print(f"Processing {file_path}: PENDING", end="\r")
             if os.path.isdir(file_path):
                 for root, _, files in os.walk(file_path):
                     for file in files:
@@ -23,11 +22,11 @@ class FileService:
                             self._add_file(path)
             else:
                 self._add_file(file_path)
-            print(f"Processing {file_path}: COMPLETE")
         except Exception as e:
             print(f"Error processing {file_path}: {e}")
 
     def _add_file(self, file_path):
+        print(f"Processing {file_path}: PENDING", end="\r")
         file_records = []
 
         raw_text = extract_text(file_path)
@@ -41,6 +40,7 @@ class FileService:
             file_records.append(file_record)
 
         self._store.add(file_records)
+        print(f"Processing {file_path}: COMPLETE")
 
     def delete_file(self, file_path):
         try:
